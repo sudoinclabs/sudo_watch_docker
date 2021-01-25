@@ -3,7 +3,7 @@
 
   # Hacky workaround to deal with git repo file permissions being read only
   pre_tasks:
-    - command: chmod -R u+w /tmp/kitchen/sudo.sudo-watch-docker/.git
+    - command: chmod -R u+w /tmp/kitchen/sudoinclabs.sudo_watch_docker/.git
 
   roles:
-    - sudo.sudo-watch-docker
+    - sudoinclabs.sudo_watch_docker
