@@ -28,7 +28,12 @@ License
 
 MIT
 
+Acknowledgements
+________________
+
+Sheraz and Masab for their hard work and R&D on finalizing the monitoring solution.
+
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Team SUDO
