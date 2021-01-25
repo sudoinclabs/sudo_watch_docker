@@ -35,13 +35,13 @@ scrape_configs:
     static_configs:
       - targets: ['cadvisor:8080']
 
-{% if enable_pushgateway %}
+  {% if enable_pushgateway %}
   - job_name: 'pushgateway'
     scrape_interval: 10s
     honor_labels: true
     static_configs:
       - targets: ['pushgateway:9091']
-{% endif %}
+  {% endif %}
 
 # Alerting specifies settings related to the Alertmanager.
 {% if enable_alertmanager %}
