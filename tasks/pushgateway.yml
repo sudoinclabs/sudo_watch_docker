@@ -24,11 +24,8 @@
   register: output
   when: enable_pushgateway
 
-- ansible.builtin.debug:
-    var: output
-  when: enable_pushgateway
-
-- ansible.builtin.assert:
+- name: Verify if the container is up
+  assert:
     that:
       - "pushgateway.pushgateway.state.running"
   when: enable_pushgateway
