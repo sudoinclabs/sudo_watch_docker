@@ -1,0 +1,14 @@
+---
+# defaults file for sudo.sudo-watch-docker
+admin_user: admin
+admin_password: admin
+
+slack_webhook_url: https://hooks.slack.com/services/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
+slack_channel_name: '#devops'
+
+enable_grafana: true
+enable_alertmanager: true
+enable_pushgateway: true
+
+
+grafana_app_mode: production

@@ -1,0 +1,57 @@
+---
+
+- name: Create Grafna configuration Directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: '472'
+    group: '1'
+  loop:
+    - /sudo/grafana/grafana_data
+    - /sudo/grafana/etc
+    - /sudo/grafana/etc/provisioning
+
+- name: Create Grafana config file
+  template:
+    src: templates/grafana.ini
+    dest: /sudo/grafana/etc/grafana.ini
+
+- name: Copy provisioning data
+  copy:
+    src: files/grafana/provisioning
+    dest: /etc/grafana/
+
+- name: Create and start Grafana service
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        grafana:
+          image: grafana/grafana:7.3.6
+          container_name: grafana
+          volumes:
+            - /sudo/grafana/grafana_data:/var/lib/grafana
+            - /sudo/grafana/etc:/etc/grafana/
+          restart: unless-stopped
+          expose:
+            - 3000
+          networks:
+            - sudowatch_watch-net
+  when: enable_grafana
+
+- ansible.builtin.debug:
+    var: output
+  when: enable_grafana
+
+- ansible.builtin.assert:
+    that:
+      - "grafana.grafana.state.running"
+  when: enable_grafana

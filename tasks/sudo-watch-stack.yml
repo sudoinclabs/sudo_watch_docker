@@ -1,0 +1,86 @@
+---
+- name: Create Prometheus config file
+  template:
+    src: templates/prometheus.yml
+    dest: /sudo/prometheus/etc/prometheus/prometheus.yml
+
+- name: Copy Prometheus Alert Rules
+  copy:
+    src: files/sudowatch.alerts
+    dest: /sudo/prometheus/etc/prometheus/
+
+- name: Create and start SUDO Watch services
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        watch-net:
+          driver: bridge
+
+      services:
+        prometheus:
+          image: prom/prometheus:v2.24.0
+          container_name: prometheus
+          volumes:
+            - /sudo/prometheus/etc:/etc/prometheus
+            - /sudo/prometheus/prometheus_data:/prometheus
+          command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--storage.tsdb.retention.time=200h'
+            - '--web.enable-lifecycle'
+          restart: unless-stopped
+          expose:
+            - 9090
+          networks:
+            - watch-net
+
+
+        nodeexporter:
+          image: prom/node-exporter:v1.0.1
+          container_name: nodeexporter
+          volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+          command:
+            - '--path.procfs=/host/proc'
+            - '--path.rootfs=/rootfs'
+            - '--path.sysfs=/host/sys'
+            - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+            - '--collector.systemd --collector.processes'
+          restart: unless-stopped
+          expose:
+            - 9100
+          networks:
+            - watch-net
+
+
+        cadvisor:
+          image: gcr.io/cadvisor/cadvisor:v0.38.6
+          container_name: cadvisor
+          volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker:/var/lib/docker:ro
+            - /cgroup:/cgroup:ro
+          restart: unless-stopped
+          expose:
+            - 8080
+          networks:
+            - watch-net
+
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+- ansible.builtin.assert:
+    that:
+      - "prometheus.prometheus.state.running"

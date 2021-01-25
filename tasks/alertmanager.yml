@@ -1,0 +1,42 @@
+---
+- name: Create Alert manager directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /sudo/alertmanager
+    - /sudo/alertmanager/etc
+    - /sudo/alertmanager/data
+  when: enable_alertmanager
+
+- name: Create Alertmanager config file
+  template:
+    src: templates/alertmanager.yml
+    dest: /sudo/alertmanager/etc/alertmanager.yml
+  when: enable_alertmanager
+
+- name: Create and start Alertmanager service
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        alertmanager:
+          image: prom/alertmanager:v0.21.0
+          container_name: alertmanager
+          volumes:
+            - /sudo/alertmanager/etc:/etc/prometheus
+            - /sudo/alertmanager/data:/var/lib/prometheus/alertmanager
+          restart: unless-stopped
+          expose:
+            - 9093
+          networks:
+            - sudowatch_watch-net
+
+  when: enable_alertmanager

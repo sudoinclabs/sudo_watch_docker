@@ -1,0 +1,18 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: ansible
+  hosts: localhost
+
+platforms:
+  - name: ubuntu-20.04
+
+suites:
+  - name: default
+    provisioner:
+      name: ansible_playbook
+      playbook: test/integration/default/test.yml
+      additional_copy_path:
+        - "."

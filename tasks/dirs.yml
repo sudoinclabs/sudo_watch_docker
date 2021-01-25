@@ -1,0 +1,15 @@
+---
+- name: Create Promethus configuratio Directory
+  file:
+    path: /sudo/prometheus/etc
+    state: directory
+    mode: '0755'
+
+- name: Create Promethus configuratio Directory
+  file:
+    path: /sudo/prometheus/prometheus_data
+    state: directory
+    mode: '0755'
+    owner: '65534'
+    group: '65534'
+
