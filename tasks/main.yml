@@ -20,5 +20,3 @@
 - include_tasks: grafana.yml
 - include_tasks: alertmanager.yml
 - include_tasks: pushgateway.yml
-
-
