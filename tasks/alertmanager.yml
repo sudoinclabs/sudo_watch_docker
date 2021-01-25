@@ -12,7 +12,7 @@
 
 - name: Create Alertmanager config file
   template:
-    src: templates/alertmanager.yml
+    src: templates/alertmanager.yml.j2
     dest: /sudo/alertmanager/etc/alertmanager.yml
     mode: '0644'
   when: enable_alertmanager

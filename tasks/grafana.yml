@@ -14,7 +14,7 @@
 
 - name: Create Grafana config file
   template:
-    src: templates/grafana.ini
+    src: templates/grafana.ini.j2
     dest: /sudo/grafana/etc/grafana.ini
     mode: '0644'
 
