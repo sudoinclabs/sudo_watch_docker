@@ -23,6 +23,7 @@
     src: files/grafana/provisioning
     dest: /etc/grafana/
     mode: '0644'
+    directory_mode: '0755'
 
 - name: Create and start Grafana service
   docker_compose:
