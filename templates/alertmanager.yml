@@ -1,7 +1,10 @@
 route:
+    {% if slack_webhook_url is defined %}
     receiver: 'slack'
+    {% endif %}
 
 receivers:
+    {% if slack_webhook_url is defined %}
     - name: 'slack'
       slack_configs:
           - send_resolved: true
@@ -9,3 +12,4 @@ receivers:
             username: 'Prometheus'
             channel: {{ slack_channel_name }}
             api_url: '{{ slack_webhook_url }}'
+    {% endif %}
