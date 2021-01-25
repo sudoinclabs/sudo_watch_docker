@@ -2,13 +2,13 @@
 - name: Create Prometheus config file
   template:
     src: templates/prometheus.yml
-    dest: /sudo/prometheus/etc/prometheus/prometheus.yml
+    dest: /sudo/prometheus/etc/prometheus.yml
     mode: '0644'
 
 - name: Copy Prometheus Alert Rules
   copy:
     src: files/sudowatch.alerts
-    dest: /sudo/prometheus/etc/prometheus/
+    dest: /sudo/prometheus/etc/
     mode: '0644'
 
 - name: Create and start SUDO Watch services
