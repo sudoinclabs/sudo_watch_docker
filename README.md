@@ -29,9 +29,9 @@ License
 MIT
 
 Acknowledgements
-________________
+----------------
 
-Sheraz and Masab for their hard work and R&D on finalizing the monitoring solution.
+*Sheraz* and *Masab* for their hard work and R&D on finalizing the monitoring solution.
 
 Author Information
 ------------------
