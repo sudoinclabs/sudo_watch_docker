@@ -34,8 +34,8 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['cadvisor:8080']
-
   {% if enable_pushgateway %}
+
   - job_name: 'pushgateway'
     scrape_interval: 10s
     honor_labels: true
