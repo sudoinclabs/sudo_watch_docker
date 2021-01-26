@@ -55,7 +55,8 @@
             - '--path.rootfs=/rootfs'
             - '--path.sysfs=/host/sys'
             - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-            - '--collector.systemd --collector.processes'
+            - '--collector.systemd'
+            - '--collector.processes'
           restart: unless-stopped
           expose:
             - 9100
