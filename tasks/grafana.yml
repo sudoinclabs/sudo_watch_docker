@@ -21,7 +21,7 @@
 - name: Copy provisioning data
   copy:
     src: files/grafana/provisioning
-    dest: /etc/grafana/
+    dest: /sudo/grafana/etc/
     mode: '0644'
     directory_mode: '0755'
 
