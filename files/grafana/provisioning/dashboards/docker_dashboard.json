@@ -1042,7 +1042,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_filesystem_size_bytes{fstype=\"aufs\"} - node_filesystem_free_bytes{fstype=\"aufs\"}",
+          "expr": "node_filesystem_size_bytes{fstype=\"ext4\"} - node_filesystem_free_bytes{fstype=\"ext4\"}",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "Used Disk Space",
