@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 893,
   "graphTooltip": 1,
-  "iteration": 1614500540444,
+  "iteration": 1614501173699,
   "links": [],
   "panels": [
     {
@@ -806,7 +806,6 @@
     },
     {
       "alert": {
-        "alertRuleTags": {},
         "conditions": [
           {
             "evaluator": {
@@ -830,7 +829,6 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "0m",
         "frequency": "60s",
         "handler": 1,
         "name": "Panel Title alert",
@@ -892,10 +890,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_load1{instance=~\"$server\"} / count by(job, instance)(count by(job, instance, cpu)(rate(node_cpu_seconds_total{instance=~\"$server\"}[1m])))",
-          "interval": "",
+          "expr": "node_load1{instance=~\"$server\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu_seconds_total{instance=~\"$server\"}))",
           "intervalFactor": 2,
-          "legendFormat": "",
           "refId": "A",
           "step": 600
         }
@@ -952,12 +948,11 @@
     },
     {
       "alert": {
-        "alertRuleTags": {},
         "conditions": [
           {
             "evaluator": {
               "params": [
-                20000000000
+                850000000000
               ],
               "type": "gt"
             },
@@ -976,7 +971,6 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "0m",
         "frequency": "60s",
         "handler": 1,
         "name": "Free/Used Disk Space alert",
@@ -1039,7 +1033,6 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "$$hashKey": "object:552",
           "alias": "Used Disk Space",
           "yaxis": 1
         }
@@ -1049,11 +1042,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_filesystem_size_bytes{fstype=\"ext4\"} - node_filesystem_free_bytes{fstype=\"ext4\"}",
+          "expr": "node_filesystem_size_bytes{fstype=\"aufs\"} - node_filesystem_free_bytes{fstype=\"aufs\"}",
           "hide": false,
-          "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{ fstype }",
+          "legendFormat": "Used Disk Space",
           "refId": "A",
           "step": 600
         }
@@ -1064,7 +1056,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 20000000000
+          "value": 850000000000
         }
       ],
       "timeFrom": null,
@@ -1087,16 +1079,14 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:536",
           "format": "bytes",
           "label": "",
           "logBase": 1,
-          "max": "30000000000",
+          "max": 1000000000000,
           "min": 0,
           "show": true
         },
         {
-          "$$hashKey": "object:537",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1112,7 +1102,6 @@
     },
     {
       "alert": {
-        "alertRuleTags": {},
         "conditions": [
           {
             "evaluator": {
@@ -1136,7 +1125,6 @@
           }
         ],
         "executionErrorState": "alerting",
-        "for": "0m",
         "frequency": "60s",
         "handler": 1,
         "name": "Available Memory alert",
@@ -2292,7 +2280,7 @@
       "type": "table-old"
     }
   ],
-  "refresh": false,
+  "refresh": "5m",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -2458,8 +2446,8 @@
     ]
   },
   "time": {
-    "from": "2021-02-23T20:26:42.849Z",
-    "to": "2021-03-03T20:26:42.849Z"
+    "from": "now-24h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
