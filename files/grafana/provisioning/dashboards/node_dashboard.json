@@ -3,7 +3,7 @@
     {
       "name": "DS_PROMETHEUS",
       "label": "Prometheus",
-      "description": "",
+      "description": "Prometheus Instance",
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
@@ -55,7 +55,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "gnetId": 1860,
   "graphTooltip": 0,
   "id": null,
