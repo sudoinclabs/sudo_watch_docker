@@ -41,7 +41,8 @@
             - 9090
           networks:
             - watch-net
-
+          labels:
+            container_group: "sudowatch"
 
         nodeexporter:
           image: prom/node-exporter:v1.0.1
@@ -62,7 +63,8 @@
             - 9100
           networks:
             - watch-net
-
+          labels:
+            container_group: "sudowatch"
 
         cadvisor:
           image: gcr.io/cadvisor/cadvisor:v0.38.6
@@ -78,7 +80,8 @@
             - 8080
           networks:
             - watch-net
-
+          labels:
+            container_group: "sudowatch"
   register: output
 
 

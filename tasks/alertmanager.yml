@@ -39,5 +39,6 @@
             - 9093
           networks:
             - sudowatch_watch-net
-
+          labels:
+            container_group: "sudowatch"
   when: enable_alertmanager

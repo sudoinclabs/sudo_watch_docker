@@ -20,7 +20,8 @@
             - 9091
           networks:
             - sudowatch_watch-net
-
+          labels:
+            container_group: "sudowatch"
   register: output
   when: enable_pushgateway
 
