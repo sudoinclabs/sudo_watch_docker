@@ -17,6 +17,12 @@
 
 - include_tasks: dirs.yml
 - include_tasks: sudo-watch-stack.yml
+
 - include_tasks: grafana.yml
+  when: enable_grafana
+
 - include_tasks: alertmanager.yml
+  when: enable_alertmanager
+
 - include_tasks: pushgateway.yml
+  when: enable_pushgateway
