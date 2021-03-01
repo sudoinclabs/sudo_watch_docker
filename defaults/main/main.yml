@@ -12,3 +12,5 @@ enable_pushgateway: true
 
 
 grafana_app_mode: production
+
+letsencrypt_email: reach@sudo.inc

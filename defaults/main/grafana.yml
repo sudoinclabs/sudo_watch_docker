@@ -1,0 +1,34 @@
+# Grafana configuration idea taken from: https://github.com/cloudalchemy/ansible-grafana/blob/master/defaults/main.yml
+
+# disable user signup / registration
+grafana_allow_sign_up: false
+
+# Allow non admin users to create organizations
+grafana_allow_org_create: false
+
+# Set to true to automatically assign new users to the default organization (id 1)
+grafana_auto_assign_org: true
+
+# Set this value to automatically add new users to the provided organization (if auto_assign_org above is set to true)
+grafana_auto_assign_org_id: 1
+
+# Default role new users will be automatically assigned (if disabled above is set to true)
+grafana_auto_assign_org_role: Viewer
+
+# Viewers can edit/inspect dashboard settings in the browser. But not save the dashboard.
+grafana_viewers_can_edit: true
+
+# Authentication conifguration
+grafana_auth: {}
+#  disable_login_form: false
+#  oauth_auto_login: false
+#  disable_signout_menu: false
+#  signout_redirect_url: ""
+#  anonymous:
+#    org_name: "Main Organization"
+#    org_role: Viewer
+#  ldap:
+#    config_file: "/etc/grafana/ldap.toml"
+#    allow_sign_up: false
+#  basic:
+#    enabled: true
