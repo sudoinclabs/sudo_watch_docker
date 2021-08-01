@@ -1,0 +1,59 @@
+---
+
+- name: Create Blackbox configuration Directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: '472'
+    group: '1'
+  loop:
+    - /sudo/blackbox-exporter
+    - /sudo/blackbox-exporter/etc
+  tags:
+    - sudowatch
+    - prometheus
+    - blackbox
+
+- name: Create Blackbox config file
+  template:
+    src: templates/blackbox.yml.j2
+    dest: /sudo/blackbox-exporter/etc/blackbox.yml
+    mode: '0644'
+  tags:
+    - sudowatch
+    - prometheus
+    - blackbox
+
+- name: Create and start Blackbox
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        blackbox-exporter:
+          image: prom/blackbox-exporter:master
+          container_name: blackbox-exporter
+          volumes:
+            - /sudo/blackbox-exporter/etc:/config
+          command:
+            - '--config.file=/config/blackbox.yml'
+          restart: unless-stopped
+          expose:
+            - 9115
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  tags:
+    - sudowatch
+    - prometheus
+    - blackbox
+
+

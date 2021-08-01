@@ -1,5 +1,8 @@
 # Grafana configuration idea taken from: https://github.com/cloudalchemy/ansible-grafana/blob/master/defaults/main.yml
 
+# Grafana version
+grafana_version: 8.2.5
+
 # disable user signup / registration
 grafana_allow_sign_up: false
 

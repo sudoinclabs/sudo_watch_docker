@@ -9,6 +9,8 @@
     - /sudo/alertmanager/etc
     - /sudo/alertmanager/data
   when: enable_alertmanager
+  tags:
+    - alertmanager
 
 - name: Create Alertmanager config file
   template:
@@ -16,6 +18,32 @@
     dest: /sudo/alertmanager/etc/alertmanager.yml
     mode: '0644'
   when: enable_alertmanager
+  tags:
+    - alertmanager
+
+
+- name: Create Alert manager UI directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /sudo/alertmanagerui
+    - /sudo/alertmanagerui/etc
+  when: enable_alertmanagerui
+  tags:
+    - alertmanager
+    - alertmanagerui
+
+- name: Create Alertmanager UI config file
+  template:
+    src: templates/alertmanagerui.yml.j2
+    dest: /sudo/alertmanagerui/etc/alertmanagerui.yml
+    mode: '0644'
+  when: enable_alertmanagerui
+  tags:
+    - alertmanager
+    - alertmanagerui
 
 - name: Create and start Alertmanager service
   docker_compose:
@@ -29,12 +57,16 @@
 
       services:
         alertmanager:
-          image: prom/alertmanager:v0.21.0
+          image: prom/alertmanager:v0.22.2
           container_name: alertmanager
+          environment: "{{ alertmanager_environment }}"
           volumes:
-            - /sudo/alertmanager/etc:/etc/prometheus
+            - /sudo/alertmanager/etc:/etc/alertmanager
             - /sudo/alertmanager/data:/var/lib/prometheus/alertmanager
           restart: unless-stopped
+          command:
+            - "--config.file=/etc/alertmanager/alertmanager.yml"
+            - "--web.external-url=http://alertmanager.{{ domain }}:9093"
           expose:
             - 9093
           networks:
@@ -42,3 +74,37 @@
           labels:
             container_group: "sudowatch"
   when: enable_alertmanager
+  tags:
+    - alertmanager
+
+- name: Create and start Alertmanager UI service
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        alertmanagerui:
+          image: lmierzwa/karma:v0.90
+          container_name: alertmanagerui
+          environment: "{{ alertmanagerui_environment }}"
+          volumes:
+            - /sudo/alertmanagerui/etc:/etc/alertmanagerui
+            - /etc/ssl/certs:/etc/ssl/certs
+          command:
+            - '--config.file=/etc/alertmanagerui/alertmanagerui.yml'
+          restart: unless-stopped
+          expose:
+            - 8080
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  when: enable_alertmanagerui
+  tags:
+    - alertmanager
+    - alertmanagerui

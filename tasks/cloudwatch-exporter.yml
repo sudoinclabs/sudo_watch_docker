@@ -1,0 +1,46 @@
+---
+
+- name: Create Cloudwatch Exporter Configuration directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /sudo/cloudwatch-exporter
+    - /sudo/cloudwatch-exporter/etc
+
+- name: Create Cloudwatch Exporter configuration file
+  template:
+    src: cloudwatch-exporter.yml.j2
+    dest: /sudo/cloudwatch-exporter/etc/config.yml
+    mode: '0644'
+    force: no
+
+
+- name: Start Cloudwatch Exporter
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        yace:
+          image: prom/cloudwatch-exporter
+          container_name: yace
+          ports:
+            - "9106:9106"
+          volumes:
+            - /sudo/cloudwatch-exporter/etc/config.yml:/config/config.yml
+          restart: unless-stopped
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  register: output
+  when:
+    - enable_cloudwatch_exporter

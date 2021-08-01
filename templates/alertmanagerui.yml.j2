@@ -1,0 +1,37 @@
+alertmanager:
+  {{ alertmanager_ui_servers | to_nice_yaml(indent=2) | indent(2,False) }}
+
+
+
+authentication:
+  header:
+    name: X-Forwarded-Email
+    value_re: ^(.+)$
+karma:
+  name: "SUDO Watch Alerts"
+labels:
+  color:
+    custom:
+      "@alertmanager":
+        - value: prod
+          color: "#e6e"
+      severity:
+        - value: info
+          color: "#87c4e0"
+        - value: warning
+          color: "#ffae42"
+        - value: critical
+          color: "#ff220c"
+        - value_re: ".*"
+          color: "#736598"
+ui:
+  refresh: 30s
+  hideFiltersWhenIdle: true
+  colorTitlebar: true
+  theme: "auto"
+  animations: true
+  minimalGroupWidth: 420
+  alertsPerGroup: 5
+  collapseGroups: collapsedOnMobile
+  multiGridLabel: ""
+  multiGridSortReverse: false

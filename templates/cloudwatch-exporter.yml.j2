@@ -1,0 +1,12 @@
+---
+region: us-east-2
+metrics:
+ - aws_namespace: AWS/ELB
+   aws_metric_name: RequestCount
+   aws_dimensions: [AvailabilityZone, LoadBalancerName]
+   aws_tag_select:
+     tag_selections:
+       Monitoring: ["enabled"]
+     resource_type_selection: "elasticloadbalancing:loadbalancer"
+     resource_id_dimension: LoadBalancerName
+   aws_statistics: [Sum]

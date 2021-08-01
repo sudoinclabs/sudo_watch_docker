@@ -21,4 +21,5 @@ tmp
 *.sw?
 *~
 *.retry
-
+roles/sudoinclabs.sudo_watch_docker
+roles/sudoinclabs.sudo_watch_docker

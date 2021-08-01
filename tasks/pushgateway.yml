@@ -25,8 +25,8 @@
   register: output
   when: enable_pushgateway
 
-- name: Verify if the container is up
-  assert:
-    that:
-      - "pushgateway.pushgateway.state.running"
-  when: enable_pushgateway
+# - name: Verify if the container is up
+#   assert:
+#     that:
+#       - "pushgateway.pushgateway.state.running"
+#   when: enable_pushgateway

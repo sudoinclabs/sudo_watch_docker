@@ -1,0 +1,107 @@
+---
+
+- name: Create Nginx and Lets Encrypt configuration Directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: '101'
+    group: '101'
+  loop:
+    - /sudo/nginx
+    - /sudo/nginx/etc
+    - /sudo/nginx/etc/certs
+    - /sudo/nginx/etc/vhost.d
+    - /sudo/nginx/html
+    - /sudo/nginx/etc/htpasswd
+    - /sudo/acmesh
+  tags:
+    - nginx
+
+
+- name: Start Nginx Services
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        nginx-proxy:
+          image: jwilder/nginx-proxy:0.9.3
+          container_name: nginx-proxy
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /var/run/docker.sock:/tmp/docker.sock
+            - /sudo/nginx/html:/usr/share/nginx/html
+            - /sudo/nginx/etc/certs:/etc/nginx/certs
+            - /sudo/nginx/etc/vhost.d:/etc/nginx/vhost.d
+            - /sudo/nginx/etc/htpasswd:/etc/nginx/htpasswd
+            - /etc/ssl/certs:/etc/ssl/certs
+          restart: unless-stopped
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  register: output
+  when:
+    - not nginx_lets_encrypt
+  tags:
+    - nginx
+
+- name: Start Nginx + Letsencrypt Services
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        nginxproxyletsencrypt:
+          image: nginxproxy/acme-companion:2.1.0
+          container_name: nginx-proxy-letsencrypt
+          depends_on:
+            - nginx-proxy
+          volumes_from:
+            - nginx-proxy
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /sudo/acmesh:/etc/acme.sh
+          environment:
+            - DEFAULT_EMAIL={{ letsencrypt_email }}
+          restart: unless-stopped
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+        nginx-proxy:
+          image: jwilder/nginx-proxy:0.9.3
+          container_name: nginx-proxy
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /var/run/docker.sock:/tmp/docker.sock
+            - /sudo/nginx/html:/usr/share/nginx/html
+            - /sudo/nginx/etc/certs:/etc/nginx/certs
+            - /sudo/nginx/etc/vhost.d:/etc/nginx/vhost.d
+            - /sudo/nginx/etc/htpasswd:/etc/nginx/htpasswd
+          restart: unless-stopped
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  when:
+    - nginx_lets_encrypt
+  tags:
+    - nginx

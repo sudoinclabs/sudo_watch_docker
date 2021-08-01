@@ -1,7 +1,13 @@
 ---
-- name: Create Promethus configuratio Directory
+- name: Create Promethus configuration Directory
   file:
     path: /sudo/prometheus/etc
+    state: directory
+    mode: '0755'
+
+- name: Create Promethus rules Directory
+  file:
+    path: /sudo/prometheus/etc/rules
     state: directory
     mode: '0755'
 
@@ -12,3 +18,14 @@
     mode: '0755'
     owner: '65534'
     group: '65534'
+
+- name: Create Node Exporter Directory
+  file:
+    path: /var/lib/node_exporter/
+    state: directory
+    mode: '0755'
+    owner: '65534'
+    group: '65534'
+  tags:
+    - sudowatch
+    - nodeexporter-collector

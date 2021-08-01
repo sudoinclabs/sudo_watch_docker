@@ -1,28 +1,75 @@
 ---
-
 - name: Update repositories cache and install "docker and pip3" packages
   apt:
     pkg:
       - python3-pip
       - docker.io
       - docker-compose
+      - python3-passlib
+      - moreutils
     update_cache: yes
     cache_valid_time: 600
+  tags:
+    - sudowatch
+    - system
 
 - name: Enable Docker
   service:
     name: docker
     enabled: yes
     state: started
+  tags:
+    - sudowatch
+    - system
 
 - include_tasks: dirs.yml
+  tags:
+    - sudowatch
+
 - include_tasks: sudo-watch-stack.yml
+  tags:
+    - sudowatch
+    - prometheus
+
+- include_tasks: blackbox.yml
+  tags:
+    - sudowatch
+    - blackbox
+    - prometheus
+
+- include_tasks: yace.yml
+  when: enable_yace
+  tags:
+    - sudowatch
+
+- include_tasks: cloudwatch-exporter.yml
+  when: enable_cloudwatch_exporter
+  tags:
+    - sudowatch
 
 - include_tasks: grafana.yml
   when: enable_grafana
+  tags:
+    - sudowatch
+    - grafana
 
 - include_tasks: alertmanager.yml
   when: enable_alertmanager
+  tags:
+    - sudowatch
+    - alertmanager
+    - alertmanagerui
 
 - include_tasks: pushgateway.yml
   when: enable_pushgateway
+  tags:
+    - sudowatch
+    - pushgateway
+
+- include_tasks: nginx.yml
+  when: enable_nginx
+  tags:
+    - sudowatch
+    - nginx
+
+

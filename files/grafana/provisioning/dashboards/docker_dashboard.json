@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 893,
   "graphTooltip": 1,
-  "iteration": 1614501173699,
+  "iteration": 1629066086695,
   "links": [],
   "panels": [
     {
@@ -806,11 +806,12 @@
     },
     {
       "alert": {
+        "alertRuleTags": {},
         "conditions": [
           {
             "evaluator": {
               "params": [
-                1.25
+                2.0
               ],
               "type": "gt"
             },
@@ -829,6 +830,7 @@
           }
         ],
         "executionErrorState": "alerting",
+        "for": "1m",
         "frequency": "60s",
         "handler": 1,
         "name": "Panel Title alert",
@@ -890,8 +892,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_load1{instance=~\"$server\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu_seconds_total{instance=~\"$server\"}))",
+          "expr": "node_load5{instance=~\"prometheus.sudo.watch\"}",
+          "interval": "",
           "intervalFactor": 2,
+          "legendFormat": "",
           "refId": "A",
           "step": 600
         }
@@ -928,7 +932,7 @@
           "format": "percentunit",
           "label": null,
           "logBase": 1,
-          "max": "1.50",
+          "max": "2.50",
           "min": null,
           "show": true
         },
@@ -1082,7 +1086,7 @@
           "format": "bytes",
           "label": "",
           "logBase": 1,
-          "max": 1000000000000,
+          "max": 150000000000,
           "min": 0,
           "show": true
         },
@@ -2420,13 +2424,13 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "nodeexporter:9100",
-          "value": "nodeexporter:9100"
+          "text": "prometheus.sudo.watch",
+          "value": "prometheus.sudo.watch"
         },
         "datasource": "Prometheus",
         "definition": "",
         "error": null,
-        "hide": 0,
+        "hide": 1,
         "includeAll": false,
         "label": "Node",
         "multi": true,
@@ -2477,5 +2481,5 @@
   "timezone": "browser",
   "title": "Docker and system monitoring",
   "uid": "watchdocker",
-  "version": 11
+  "version": 20
 }

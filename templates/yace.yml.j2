@@ -1,0 +1,21 @@
+discovery:
+  jobs:
+  - regions:
+      - us-east-2
+  - type: ec2
+    regions:
+      - us-east-2
+      - us-east-1
+    metrics:
+      - name: CPUUtilization
+        statistics: [Average]
+        period: 600
+        length: 600
+      - name: MetadataNoToken
+        statistics: [Sum]
+        period: 600
+        length: 600
+      - name: StatusCheckFailed
+        statistics: [Sum]
+        period: 60
+        length: 600

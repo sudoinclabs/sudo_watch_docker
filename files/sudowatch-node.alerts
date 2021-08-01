@@ -1,0 +1,58 @@
+groups:
+- name: node
+  rules:
+  - alert: cpu_usage
+    expr: node_load1 > 1.5
+    for: 1m
+    labels:
+      severity: info
+    annotations:
+      summary: "Server {{ $labels.instance }} load increasing"
+      description: "The avg load 1m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: cpu_usage
+    expr: node_load1 > 1.7
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server {{ $labels.instance }} under HIGH load"
+      description: "The avg load for 5m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: cpu_usage
+    expr: node_load1 > 2.0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server {{ $labels.instance }} under very HIGH load"
+      description: "The avg load for 2m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+
+  - alert: memory_usage
+    expr: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum(node_memory_MemTotal_bytes)  > 0.75
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server {{ $labels.instance }} memory is almost full"
+      description: "Memory usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: memory_usage
+    expr: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum(node_memory_MemTotal_bytes)  > 0.85
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server {{ $labels.instance }} memory is almost full"
+      description: "Memory usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: filesystem_usage
+    expr: (node_filesystem_size_bytes{fstype!='tmpfs'} - node_filesystem_free_bytes{fstype!='tmpfs'}) / node_filesystem_size_bytes{fstype!='tmpfs'}  > 0.75
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server storage is almost full"
+      description: "Docker host storage usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+

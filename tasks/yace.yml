@@ -1,0 +1,46 @@
+---
+
+- name: Create YACE Configuration directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /sudo/yace
+    - /sudo/yace/etc
+
+- name: Create YACE configuration file
+  template:
+    src: yace.yml.j2
+    dest: /sudo/yace/etc/config.yml
+    mode: '0644'
+    force: no
+
+
+- name: Start YACE
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        yace:
+          image: quay.io/invisionag/yet-another-cloudwatch-exporter:v0.28.0-alpha
+          container_name: yace
+          expose:
+            - 5000
+          volumes:
+            - /sudo/yace/etc/config.yml:/tmp/config.yml
+          restart: unless-stopped
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+  register: output
+  when:
+    - enable_yace

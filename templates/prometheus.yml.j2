@@ -11,29 +11,31 @@ global:
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
-      environment: 'sudowatch'
+      environment: {{ sudowatch_environment }}
 
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
 rule_files:
-  - "sudowatch.alerts"
+  - "rules/*.rules"
 
 # A list of scrape configurations.
 scrape_configs:
-  - job_name: 'prometheus'
-    scrape_interval: 10s
-    static_configs:
-      - targets: ['localhost:9090']
+  {{ prometheus_default_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
 
-  - job_name: 'nodeexporter'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['nodeexporter:9100']
+  {% if prometheus_scrape_configs %}
 
-  - job_name: 'cadvisor'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['cadvisor:8080']
+  {{ prometheus_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+
+  {% endif %}
+
+
+  {% if enable_yace and yace_scrape_configs is defined and yace_scrape_configs %}
+
+  {{ yace_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+
+  {% endif %}
+
+
   {% if enable_pushgateway %}
 
   - job_name: 'pushgateway'

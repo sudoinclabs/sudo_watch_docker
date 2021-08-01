@@ -4,13 +4,57 @@
     src: templates/prometheus.yml.j2
     dest: /sudo/prometheus/etc/prometheus.yml
     mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
 
-- name: Copy Prometheus Alert Rules
+- name: Copy SUDO Watch Prometheus Alert Rules
   copy:
-    src: files/sudowatch.alerts
-    dest: /sudo/prometheus/etc/
+    src: files/sudowatch-prometheus.alerts
+    dest: /sudo/prometheus/etc/rules/sudowatch-prometheus.rules
     mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
 
+- name: Copy SUDO Watch Blackbox Alert Rules
+  copy:
+    src: files/sudowatch-blackbox-exporter.alerts
+    dest: /sudo/prometheus/etc/rules/sudowatch-blackbox.rules
+    mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
+
+- name: Copy SUDO Watch Docker Alert Rules
+  copy:
+    src: files/sudowatch-docker.alerts
+    dest: /sudo/prometheus/etc/rules/sudowatch-docker.rules
+    mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
+
+- name: Copy SUDO Watch Node Alert Rules
+  copy:
+    src: files/sudowatch-node.alerts
+    dest: /sudo/prometheus/etc/rules/sudowatch-node.rules
+    mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
+
+- name: Create Custom Alert rules file
+  template:
+    src: templates/alertrules.yml.j2
+    dest: /sudo/prometheus/etc/rules/ansible.rules
+    mode: '0644'
+  tags:
+    - prometheus
+  notify: "Restart Prometheus"
+
+    #- VIRTUAL_HOST={{ prom_host }}.{{ domain }}
+    #- VIRTUAL_PORT=9090
 - name: Create and start SUDO Watch services
   docker_compose:
     project_name: sudowatch
@@ -29,13 +73,8 @@
           volumes:
             - /sudo/prometheus/etc:/etc/prometheus
             - /sudo/prometheus/prometheus_data:/prometheus
-          command:
-            - '--config.file=/etc/prometheus/prometheus.yml'
-            - '--storage.tsdb.path=/prometheus'
-            - '--web.console.libraries=/etc/prometheus/console_libraries'
-            - '--web.console.templates=/etc/prometheus/consoles'
-            - '--storage.tsdb.retention.time=200h'
-            - '--web.enable-lifecycle'
+          environment: "{{ prom_environment }}"
+          command: "{{ prom_command }}"
           restart: unless-stopped
           expose:
             - 9090
@@ -51,6 +90,7 @@
             - /proc:/host/proc:ro
             - /sys:/host/sys:ro
             - /:/rootfs:ro
+            - /var/lib/node_exporter:/var/lib/node_exporter
           command:
             - '--path.procfs=/host/proc'
             - '--path.rootfs=/rootfs'
@@ -58,6 +98,7 @@
             - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
             - '--collector.systemd'
             - '--collector.processes'
+            - '--collector.textfile.directory=/var/lib/node_exporter'
           restart: unless-stopped
           expose:
             - 9100
@@ -76,6 +117,9 @@
             - /var/lib/docker:/var/lib/docker:ro
             - /cgroup:/cgroup:ro
           restart: unless-stopped
+          command:
+            - '-housekeeping_interval=10s'
+            - '-docker_only=true'
           expose:
             - 8080
           networks:
@@ -83,9 +127,39 @@
           labels:
             container_group: "sudowatch"
   register: output
+  tags:
+    - sudowatch
+    - nodeexporter
+    - prometheus
+    - nodeexporter-collector
 
+# - name: Verify if the container is up
+#   assert:
+#     that:
+#       - "prometheus.prometheus.state.running"
+#   tags:
+#     - prometheus
 
-- name: Verify if the container is up
-  assert:
-    that:
-      - "prometheus.prometheus.state.running"
+- name: Install Node exporter Collector scripts
+  git:
+    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
+    dest: /sudo/node-exporter-textfile-collector-scripts
+    version: master
+    update: yes
+  tags:
+    - sudowatch
+    - nodeexporter-collector
+
+- name: Creates a cron file for node-reboot under /etc/cron.d
+  ansible.builtin.cron:
+    name: node-reboot
+    weekday: "*"
+    minute: "0"
+    hour: "*"
+    user: root
+    job: "/sudo/node-exporter-textfile-collector-scripts/apt.sh | sponge /var/lib/node_exporter/directory_size.prom    "
+    cron_file: node-reboot
+  tags:
+    - sudowatch
+    - nodeexporter-collector
+

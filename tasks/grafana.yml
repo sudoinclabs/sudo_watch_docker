@@ -11,12 +11,22 @@
     - /sudo/grafana/grafana_data
     - /sudo/grafana/etc
     - /sudo/grafana/etc/provisioning
+    - /sudo/grafana/etc/provisioning/notifiers
+    - /sudo/grafana/etc/provisioning/plugins
+    - /sudo/grafana/etc/provisioning/dashboards
+    - /sudo/grafana/etc/provisioning/datasources
+  tags:
+    - grafana
 
 - name: Create Grafana config file
   template:
     src: templates/grafana.ini.j2
     dest: /sudo/grafana/etc/grafana.ini
     mode: '0644'
+  notify:
+    - Restart grafana
+  tags:
+    - grafana
 
 - name: Copy provisioning data
   copy:
@@ -24,6 +34,8 @@
     dest: /sudo/grafana/etc/
     mode: '0644'
     directory_mode: '0755'
+  tags:
+    - grafana
 
 - name: Create and start Grafana service
   docker_compose:
@@ -38,20 +50,92 @@
 
       services:
         grafana:
-          image: grafana/grafana:7.3.6
+          image: grafana/grafana:8.2.7
           container_name: grafana
           volumes:
             - /sudo/grafana/grafana_data:/var/lib/grafana
             - /sudo/grafana/etc:/etc/grafana/
+          environment:
+            - VIRTUAL_HOST={{ grafana_domain }}
+            - VIRTUAL_PORT=3000
+            - LETSENCRYPT_HOST={{ grafana_domain }}
+            - LETSENCRYPT_EMAIL={{ grafana_letsencrypt_email }}
+            - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+            - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+            - GF_LOG_FILTERS=rendering:debug
+            - IGNORE_HTTPS_ERRORS=true
           restart: unless-stopped
           expose:
             - 3000
           networks:
             - sudowatch_watch-net
-  when: enable_grafana
+          labels:
+            container_group: "sudowatch"
+        renderer:
+          image: grafana/grafana-image-renderer:3.3.0
+          container_name: renderer
+          restart: unless-stopped
+          expose:
+            - 8081
+          environment:
+            ENABLE_METRICS: 'true'
+          networks:
+            - sudowatch_watch-net
+  tags:
+    - grafana
+  when:
+    - grafana_nginx_proxy
 
-- name: Verify if the container is up
-  assert:
-    that:
-      - "grafana.grafana.state.running"
-  when: enable_grafana
+- name: Create and start Grafana service
+  docker_compose:
+    project_name: sudowatch
+    definition:
+      version: '2'
+
+
+      networks:
+        sudowatch_watch-net:
+          external: true
+
+      services:
+        grafana:
+          image: grafana/grafana:8.2.7
+          container_name: grafana
+          volumes:
+            - /sudo/grafana/grafana_data:/var/lib/grafana
+            - /sudo/grafana/etc:/etc/grafana/
+            - /etc/hosts:/etc/hosts
+          environment:
+            - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+            - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+            - GF_LOG_FILTERS=rendering:debug
+            - IGNORE_HTTPS_ERRORS=true
+          restart: unless-stopped
+          expose:
+            - 3000
+          networks:
+            - sudowatch_watch-net
+          labels:
+            container_group: "sudowatch"
+        renderer:
+          image: grafana/grafana-image-renderer:3.3.0
+          container_name: renderer
+          restart: unless-stopped
+          expose:
+            - 8081
+          environment:
+            ENABLE_METRICS: 'true'
+          networks:
+            - sudowatch_watch-net
+  tags:
+    - grafana
+  when:
+    - grafana_nginx_proxy != true
+
+
+
+# - name: Verify if the container is up
+#   assert:
+#     that:
+#       - "grafana.grafana.state.running"
+#   when: enable_grafana

@@ -1,2 +1,16 @@
 ---
 # handlers file for sudo.sudo-watch-docker
+
+- name: Restart grafana
+  command: docker restart grafana
+
+
+- name: Restart Prometheus
+  command: docker restart prometheus
+
+- name: Restart Nginx
+  command: docker restart nginx-proxy
+
+- name: Restart Alertmanager
+  command: docker restart alertmanager
+
