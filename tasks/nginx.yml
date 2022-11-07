@@ -96,6 +96,7 @@
             - /sudo/nginx/etc/certs:/etc/nginx/certs
             - /sudo/nginx/etc/vhost.d:/etc/nginx/vhost.d
             - /sudo/nginx/etc/htpasswd:/etc/nginx/htpasswd
+            - /etc/ssl/certs:/etc/ssl/certs
           restart: unless-stopped
           networks:
             - sudowatch_watch-net

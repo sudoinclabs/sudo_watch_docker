@@ -11,8 +11,26 @@ groups:
       description: "The avg load 1m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 
   - alert: cpu_usage
+    expr: node_load1{instance="tax.ioogo.com"} > 1.8
+    for: 20m
+    labels:
+      severity: info
+    annotations:
+      summary: "Server {{ $labels.instance }} load increasing"
+      description: "The avg load 20m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: cpu_usage
     expr: node_load1 > 1.7
     for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server {{ $labels.instance }} under HIGH load"
+      description: "The avg load for 5m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: cpu_usage
+    expr: node_load1{instance="tax.ioogo.com"} > 2.5
+    for: 20m
     labels:
       severity: warning
     annotations:
@@ -28,6 +46,23 @@ groups:
       summary: "Server {{ $labels.instance }} under very HIGH load"
       description: "The avg load for 2m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 
+  - alert: cpu_usage
+    expr: node_load1{instance="prometheus.sudo.watch"} > 2.0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server {{ $labels.instance }} under very HIGH load"
+      description: "The avg load for 10m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: cpu_usage
+    expr: node_load1{instance="tax.ioogo.com"} > 4.0
+    for: 20m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server {{ $labels.instance }} under very HIGH load"
+      description: "The avg load for 20m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 
   - alert: memory_usage
     expr: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum(node_memory_MemTotal_bytes)  > 0.75

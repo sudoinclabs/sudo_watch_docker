@@ -50,7 +50,7 @@
 
       services:
         grafana:
-          image: grafana/grafana:8.2.7
+          image: grafana/grafana:{{ grafana_version }}
           container_name: grafana
           volumes:
             - /sudo/grafana/grafana_data:/var/lib/grafana
@@ -99,7 +99,7 @@
 
       services:
         grafana:
-          image: grafana/grafana:8.2.7
+          image: grafana/grafana:{{ grafana_version }}
           container_name: grafana
           volumes:
             - /sudo/grafana/grafana_data:/var/lib/grafana

@@ -35,14 +35,28 @@
     - prometheus
   notify: "Restart Prometheus"
 
-- name: Copy SUDO Watch Node Alert Rules
+- name: Generate Node Alerts
+  prometheus_merge:
+    rules_path: files/sudowatch-node.alerts
+  register: node_alerts
+  tags:
+    - prometheus
+- debug: var=node_alerts
+- name: Create Custom Alert rules file
   copy:
-    src: files/sudowatch-node.alerts
-    dest: /sudo/prometheus/etc/rules/sudowatch-node.rules
+    content: "{{ node_alerts }}"
+    dest: /tmp/ansible.rules
     mode: '0644'
   tags:
     - prometheus
-  notify: "Restart Prometheus"
+# - name: Copy SUDO Watch Node Alert Rules
+#   copy:
+#     src: files/sudowatch-node.alerts
+#     dest: /sudo/prometheus/etc/rules/sudowatch-node.rules
+#     mode: '0644'
+#   tags:
+#     - prometheus
+#   notify: "Restart Prometheus"
 
 - name: Create Custom Alert rules file
   template:
