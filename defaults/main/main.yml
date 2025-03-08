@@ -58,6 +58,7 @@ prometheus_default_scrape_configs:
     - source_labels: [instanceLabel]
       target_label:  instance
 
+alertmanager_template: templates/alertmanager.yml.j2
 
 yace_scrape_configs:
     - job_name: 'yace'

@@ -1,6 +1,6 @@
 ---
 - name: Create and start Pushgateway service
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'

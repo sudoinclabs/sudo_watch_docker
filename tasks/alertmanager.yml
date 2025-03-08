@@ -46,7 +46,7 @@
     - alertmanagerui
 
 - name: Create and start Alertmanager service
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'
@@ -78,7 +78,7 @@
     - alertmanager
 
 - name: Create and start Alertmanager UI service
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'

@@ -70,7 +70,7 @@
     #- VIRTUAL_HOST={{ prom_host }}.{{ domain }}
     #- VIRTUAL_PORT=9090
 - name: Create and start SUDO Watch services
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'

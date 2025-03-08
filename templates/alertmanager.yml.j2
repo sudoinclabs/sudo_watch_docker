@@ -33,9 +33,15 @@ route:
   repeat_interval: 3h
 
   # A default receiver - Alertsnitch? https://gitlab.com/yakshaving.art/alertsnitch
-  receiver: alertsnitch
+  receiver: default
 
   routes:
+
+    {% if alert_customer_route is defined %}
+
+    {{ alert_customer_route | to_nice_yaml(indent=2) | indent(4,False) }}
+
+    {% endif %}
 
     - receiver: 'l1critical'
       continue: true
@@ -54,9 +60,22 @@ route:
 
 
 receivers:
-  - name: alertsnitch
+
+{% if alert_default_receiver is defined %}
+  {{ alert_default_receiver | to_nice_yaml(indent=2) | indent(2,False) }}
+{% else %}
+
+  - name: default
     webhook_configs:
       - url: http://alertsnitch:9567/webhook
+
+{% endif %}
+
+  {% if alert_customer_receiver is defined %}
+
+  {{ alert_customer_receiver | to_nice_yaml(indent=2) | indent(2,False) }}
+
+  {% endif %}
 
   {% if alert_handler_webhook_url is defined %}
 

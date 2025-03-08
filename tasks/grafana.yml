@@ -38,7 +38,7 @@
     - grafana
 
 - name: Create and start Grafana service
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'
@@ -87,7 +87,7 @@
     - grafana_nginx_proxy
 
 - name: Create and start Grafana service
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'

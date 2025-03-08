@@ -4,7 +4,7 @@
     pkg:
       - python3-pip
       - docker.io
-      - docker-compose
+#      - docker-compose-plugin
       - python3-passlib
       - moreutils
     update_cache: yes

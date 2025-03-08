@@ -20,7 +20,7 @@
 
 
 - name: Start Nginx Services
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'
@@ -32,7 +32,7 @@
 
       services:
         nginx-proxy:
-          image: jwilder/nginx-proxy:0.9.3
+          image: jwilder/nginx-proxy:1.7.0
           container_name: nginx-proxy
           ports:
             - "80:80"
@@ -56,7 +56,7 @@
     - nginx
 
 - name: Start Nginx + Letsencrypt Services
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_name: sudowatch
     definition:
       version: '2'
@@ -85,7 +85,7 @@
           labels:
             container_group: "sudowatch"
         nginx-proxy:
-          image: jwilder/nginx-proxy:0.9.3
+          image: jwilder/nginx-proxy:1.7.0
           container_name: nginx-proxy
           ports:
             - "80:80"
